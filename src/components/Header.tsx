@@ -1,16 +1,33 @@
-import { Search, Heart, X } from 'lucide-react';
-import { useState } from 'react';
+import { Search, Heart, X, ShoppingBag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import HeaderCarousel from './HeaderCarousel';
+import { getCart } from '../lib/cartStore';
 
 interface HeaderProps {
   onCategoryChange: (category: string) => void;
   currentCategory: string;
   onSearch: (query: string) => void;
+  onCartOpen: () => void;
 }
 
-export default function Header({ onCategoryChange, currentCategory, onSearch }: HeaderProps) {
+export default function Header({ onCategoryChange, currentCategory, onSearch, onCartOpen }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  useEffect(() => {
+    const cart = getCart();
+    setCartItemCount(cart.items.length);
+
+    const handleStorageChange = () => {
+      const updatedCart = getCart();
+      setCartItemCount(updatedCart.items.length);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const categories = [
     { name: 'Home', value: 'all' },
@@ -29,7 +46,7 @@ export default function Header({ onCategoryChange, currentCategory, onSearch }: 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20 gap-4">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2"
@@ -42,10 +59,10 @@ export default function Header({ onCategoryChange, currentCategory, onSearch }: 
           <div className="flex-1 flex justify-center md:justify-start">
             <h1
               onClick={() => onCategoryChange('all')}
-              className="text-xl md:text-2xl font-bold tracking-tight cursor-pointer hover:opacity-70 transition-opacity"
+              className="text-lg md:text-xl font-bold tracking-tight cursor-pointer hover:opacity-70 transition-opacity whitespace-nowrap"
               style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
             >
-              Eddjos Collections .ke
+              Eddjos Collections
             </h1>
           </div>
 
@@ -65,14 +82,27 @@ export default function Header({ onCategoryChange, currentCategory, onSearch }: 
             ))}
           </nav>
 
-          <div className="flex items-center space-x-4">
+          <HeaderCarousel />
+
+          <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="p-2 hover:bg-gray-50 rounded-full transition-colors"
             >
               <Search className="w-5 h-5 text-gray-700" />
             </button>
-            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors">
+            <button
+              onClick={onCartOpen}
+              className="relative p-2 hover:bg-gray-50 rounded-full transition-colors"
+            >
+              <ShoppingBag className="w-5 h-5 text-gray-700" />
+              {cartItemCount > 0 && (
+                <span className="absolute top-1 right-1 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors hidden sm:block">
               <Heart className="w-5 h-5 text-gray-700" />
             </button>
           </div>

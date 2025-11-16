@@ -1,11 +1,20 @@
+import ImageCarousel from './ImageCarousel';
+
 interface HeroProps {
   onShopClick: (category: string) => void;
 }
 
 export default function Hero({ onShopClick }: HeroProps) {
+  const heroImages = [
+    'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/3622617/pexels-photo-3622617.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/1055691/pexels-photo-1055691.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  ];
+
   return (
     <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center"></div>
+      <ImageCarousel images={heroImages} height="h-[600px]" autoPlayInterval={2000} />
       <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/50"></div>
 
       <div className="relative z-10 text-center max-w-4xl px-4">

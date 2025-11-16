@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, Product } from '../lib/supabase';
 import ProductCard from './ProductCard';
+import ProductDetailModal from './ProductDetailModal';
 
 interface ProductGridProps {
   category: string;
@@ -13,6 +14,8 @@ export default function ProductGrid({ category, searchQuery }: ProductGridProps)
   const [error, setError] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [cartUpdated, setCartUpdated] = useState(0);
 
   useEffect(() => {
     fetchProducts();
@@ -134,9 +137,21 @@ export default function ProductGrid({ category, searchQuery }: ProductGridProps)
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onViewDetails={setSelectedProduct}
+              onAddToCart={() => setCartUpdated((prev) => prev + 1)}
+            />
           ))}
         </div>
+      )}
+
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
       )}
     </section>
   );
